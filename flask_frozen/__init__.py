@@ -321,9 +321,10 @@ class Freezer(object):
         ignore_404 = self.app.config['FREEZER_IGNORE_404_NOT_FOUND']
         if response.status_code != 200:
             if response.status_code == 404 and ignore_404:
-                warnings.warn('Ignored %r on URL %s' % (response.status, url),
-                              NotFoundWarning,
-                              stacklevel=3)
+                if url != '/404.html':
+                    warnings.warn('Ignored %r on URL %s' % (response.status, url),
+                                  NotFoundWarning,
+                                  stacklevel=3)
             elif response.status_code in (301, 302) and ignore_redirect:
                 warnings.warn('Ignored %r on URL %s' % (response.status, url),
                               RedirectWarning,
