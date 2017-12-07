@@ -119,7 +119,7 @@ class Freezer(object):
             app.config.setdefault('FREEZER_IGNORE_404_NOT_FOUND', False)
             app.config.setdefault('FREEZER_REDIRECT_POLICY', 'follow')
             app.config.setdefault('FREEZER_SKIP_EXISTING', False)
-
+            app.config.setdefault('FREEZER_IGNORE_404_FOR_URLS', [])
     def register_generator(self, function):
         """
         Register a function as an URL generator.
@@ -319,9 +319,10 @@ class Freezer(object):
         # except we explicitly want 404 errors to be skipped
         # (eg. while application is in development)
         ignore_404 = self.app.config['FREEZER_IGNORE_404_NOT_FOUND']
+        ignore_list = self.app.config['FREEZER_IGNORE_404_FOR_URLS']
         if response.status_code != 200:
             if response.status_code == 404 and ignore_404:
-                if url != '/404.html':
+                if url not in ignore_list:
                     warnings.warn('Ignored %r on URL %s' % (response.status, url),
                                   NotFoundWarning,
                                   stacklevel=3)
